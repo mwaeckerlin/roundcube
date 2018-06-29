@@ -1,7 +1,12 @@
-FROM mwaeckerlin/base
+FROM mwaeckerlin/php-fpm
 MAINTAINER mwaeckerlin
 
-RUN apk update && apk add roundcubemail-installer roundcubemail
-
-VOLUME /usr/share/webapps/roundcube
-VOLUME /etc/roundcube
+ENV WEB_ROOT_PATH /usr/share/webapps/roundcube
+ENV CONTAINERNAME "roundcube"
+USER root
+ADD start.sh /start.sh
+RUN apk update && \
+    apk add roundcubemail && \
+    mkdir /usr/share/webapps/roundcube/tmp && \
+    chown -R $WWWUSER /etc/roundcube /usr/share/webapps/roundcube/tmp
+USER $WWWUSER
