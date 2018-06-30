@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/sh -e
 
 # check database
 if test -z "$DB_DSNW"; then
@@ -8,7 +8,7 @@ if test -z "$DB_DSNW"; then
         export MYSQL_DATABASE=${MYSQL_ENV_MYSQL_DATABASE:-${MYSQL_DATABASE:-roundcube}}
         export DB_DSNW=mysql://${MYSQL_USER}:${MYSQL_PASSWORD}@mysql/${MYSQL_DATABASE}
     else
-        export DB_DSNW="sqlite:///${SQLITE_PATH:-/var/tmp/sqlite.db}?mode=0646"
+        export DB_DSNW="sqlite:///${SQLITE_PATH:-db/sqlite.db}?mode=0646"
     fi
 fi
 
@@ -34,8 +34,8 @@ if test -n "${PLUGINS}"; then
 fi
 
 # setup configuration
-test -e /etc/config.inc.php || \
-    cat > /etc/config.inc.php <<EOF
+test -e /etc/roundcube/config.inc.php || \
+    cat > /etc/roundcube/config.inc.php <<EOF
 <?php
 
 /* Configuration for Roundcube Webmail */
@@ -81,10 +81,10 @@ test -e /etc/config.inc.php || \
 // %d - domain (http hostname \$_SERVER['HTTP_HOST'] without the first part)
 // %z - IMAP domain (IMAP hostname without the first part)
 // For example %n = mail.domain.tld, %t = domain.tld
-\$config['username_domain'] = ${USERNAME_DOMAIN}
+\$config['username_domain'] = ${USERNAME_DOMAIN};
 
 // lowercase username? 0: no, 1: domain only, 2: yes
-\$config['login_lc'] = ${LOGIN_LC:-2}
+\$config['login_lc'] = ${LOGIN_LC:-2};
 
 // Never use anything different than UTF-8!
 \$config['password_charset'] = 'UTF-8';
@@ -146,7 +146,7 @@ test -e /etc/config.inc.php || \
 // ----------------------------------
 
 // system error reporting, sum of: 1 = log; 4 = show
-\$config['debug_level'] = 5;
+\$config['debug_level'] = 1;
 
 // log driver:  'syslog', 'stdout' or 'file'.
 \$config['log_driver'] = 'stdout';
@@ -193,7 +193,7 @@ test -e /etc/config.inc.php || \
 // General Configuration
 // ----------------------------------
 
-\$config['temp_dir'] = '/usr/share/webapps/roundcube/tmp/'
+\$config['temp_dir'] = 'tmp';
 
 
 // ----------------------------------
@@ -224,7 +224,7 @@ test -e /etc/config.inc.php || \
 // 2 = ignore (never send or ask)
 // 3 = send automatically if sender is in addressbook, otherwise ask the user
 // 4 = send automatically if sender is in addressbook, otherwise ignore
-$config['mdn_requests'] = ${MDN_REQUESTS:-0};
+\$config['mdn_requests'] = ${MDN_REQUESTS:-0};
 
 // Set identities access level:
 // 0 - many identities with possibility to edit all params

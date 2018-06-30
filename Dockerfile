@@ -10,7 +10,9 @@ ADD config-roundcube.sh /config-roundcube.sh
 RUN apk update && \
     apk add roundcubemail pwgen && \
     mkdir /usr/share/webapps/roundcube/tmp && \
-    chown -R $WWWUSER /etc/roundcube /usr/share/webapps/roundcube/tmp
+    mkdir /usr/share/webapps/roundcube/db && \
+    chown -R $WWWUSER /etc/roundcube /usr/share/webapps/roundcube/tmp /usr/share/webapps/roundcube/db
 USER $WWWUSER
 
 VOLUME /etc/roundcube
+VOLUME /usr/share/webapps/roundcube/db

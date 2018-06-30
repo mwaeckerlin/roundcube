@@ -11,7 +11,7 @@ Volumes
 
 Configuration is stored in `/etc/roundcube`. Make sure to store this in a persistent volume, otherwise you will lose your DES-key which is used to store encrypted passwords and your database will become unavailable.
 
-Also permanently store the database volume, whether it is external (e.g. [mysql]) or internal in SQLite (defaults to `/var/tmp/sqlite.db`).
+Also permanently store the database volume, whether it is external (e.g. [mysql]) or internal in SQLite (defaults to `/usr/share/webapps/roundcube/db/sqlite.db`).
 
 
 Configuration
@@ -24,14 +24,14 @@ Configuration is done using environment variables. MySQL database can be configu
 
 ### Database
 
-A database is required to store user configurations. By default, SQLite is used in `/var/tmp/sqlite.db`. Make sure, you store the database on a persistent volume.
+A database is required to store user configurations. By default, SQLite is used in `/usr/share/webapps/roundcube/db/sqlite.db`. Make sure, you store the database on a persistent volume.
 
 You have different options to connect to a database. I recommend using [mysql] must have been initialized with the environment variables `MYSQL_PASSWORD`, `MYSQL_USER` and `MYSQL_DATABASE`, which are then inherited and used by [mwaeckerlin/roundcube]
 
 
 #### MySQL
 
-You can link to a mysql database using `--link your-db-container:**mysql**`. Here it is important to name the database **`mysql`** (the text after the colon `:`). Your [mysql] must be initialized with the environment variables below.
+You can link to a mysql database using `--link your-db-container:mysql`. Here it is important to name the database `mysql` (the text after the colon `:`). Your [mysql] must be initialized with the environment variables below.
 
 Or you can connect to a local MySQL server (e.g. in docker swarm) using the following environment variables:
 
@@ -46,7 +46,7 @@ Or you can connect to a local MySQL server (e.g. in docker swarm) using the foll
 
 If no database is configured, [mwaeckerlin/roundcube] defaults to SQLite. Do not forget to store the database in a volume and do backups. You can specify the path to the database in variable:
 
-  - `SQLITE_PATH`: Path to the SQLite database file, defaults to `/var/tmp/sqlite.db`.
+  - `SQLITE_PATH`: Path to the SQLite database file, defaults to `/usr/share/webapps/roundcube/db/sqlite.db`.
 
 
 #### Other Databases
@@ -70,6 +70,14 @@ Define which IMAP servers can be accessed by defingen the environment variable:
      
      - A comma plus space (`, `) separated list of hosts, presented as combobox (don't use quotes). The number of spaces (one after comma) is relevant.
     
+       Examples:
+
+       `-e 'DEFAULT_HOST=mail.example.com => Default Server, ssl://webmail.example.com => Webmail Server, ssl://mail.example.com:993 => Secure Webmail Server'` 
+
+       `-e 'DEFAULT_HOST='` 
+
+       `-e 'DEFAULT_HOST=ssl://mail.example.com'`
+
     Use host prefix `ssl://` or `tls://` to use SSL or TLS connections (strongly recommended).
     
     You can add a name to a hostname by using a space enclodes equal+geater dash (` => `), the name cannot contain a comma. The number of spaces (one before and after dash) is relevant.
@@ -80,14 +88,6 @@ Define which IMAP servers can be accessed by defingen the environment variable:
      - `0`: disabled, don't convert the user name
      - `1`: domain part only
      - **`2`**: lower-case the entire user name (default)
-
-#### Examples
-
-`-e 'DEFAULT_HOST=mail.example.com => Default Server, ssl://webmail.example.com => Webmail Server, ssl://mail.example.com:993 => Secure Webmail Server'` 
-
-`-e 'DEFAULT_HOST='` 
-
-`-e 'DEFAULT_HOST=ssl://mail.example.com'`
 
 
 ### SMTP
@@ -165,7 +165,7 @@ These variables set the user's defaults. The user can change the values in their
 
  - `IDENTITIES_LEVEL`: Set identities access level.
  
-     - **`0`**: Many identities with possibility to edit all params.
+     - **`0`**: Many identities with possibility to edit all params. This is default.
      
      - `1`: Many identities with possibility to edit all params but not email address.
      
@@ -255,16 +255,16 @@ Examples
 After running the docker containers, login at: http://localhost:8005
 
 
-### Simpelst
+### Simplest
 
-Simpelst configuration is no configuration:
+Simplest configuration is no configuration:
 
 ```bash
 docker run -d -p 8005:8080 --name roundcube mwaeckerlin/roundcube
 ```
 
 
-### MySQL
+### Simple MySQL
 
 Use [mysql] with a persistend volume in a separate container:
 
